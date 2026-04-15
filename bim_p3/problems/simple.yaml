@@ -1,0 +1,70 @@
+# Example YAML Configuration for VRP Problem Instance
+# This file defines a Vehicle Routing Problem with specific customers and parameters
+
+# Problem-level settings
+metadata:
+  name: Example VRPTW Instance
+  description: A small example problem with 5 customers
+  vehicles: 2
+  vehicle_capacity: 50
+  vehicle_speed: 60  # km/h
+
+# Depot location (where all routes start and end)
+depot:
+  x: 0.0
+  y: 0.0
+
+# List of customers that need to be served
+# Each customer has:
+#   id: unique identifier (1-based)
+#   x, y: coordinates
+#   demand: amount of goods/capacity needed
+#   ready_time: earliest time customer can be served
+#   due_time: latest time customer can be served
+#   service_time: how long the service takes
+#   priority: importance (higher values are more critical)
+customers:
+  - id: 1
+    x: 10.0
+    y: 10.0
+    demand: 5
+    ready_time: 0.0
+    due_time: 100.0
+    service_time: 5.0
+    priority: 1.0
+
+  - id: 2
+    x: 20.0
+    y: 25.0
+    demand: 8
+    ready_time: 5.0
+    due_time: 120.0
+    service_time: 7.0
+    priority: 1.0
+
+  - id: 3
+    x: 35.0
+    y: 15.0
+    demand: 6
+    ready_time: 10.0
+    due_time: 110.0
+    service_time: 5.0
+    priority: 1.0
+
+  - id: 4
+    x: 28.0
+    y: 40.0
+    demand: 7
+    ready_time: 15.0
+    due_time: 130.0
+    service_time: 6.0
+    priority: 1.0
+
+  - id: 5
+    x: 5.0
+    y: 35.0
+    demand: 9
+    ready_time: 0.0
+    due_time: 150.0
+    service_time: 8.0
+    priority: 1.0

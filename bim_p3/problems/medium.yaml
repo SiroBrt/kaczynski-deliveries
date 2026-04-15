@@ -1,0 +1,104 @@
+# Example YAML Configuration for VRP Problem Instance - Medium Size
+# This file defines a Vehicle Routing Problem with 10 customers
+
+metadata:
+  name: Medium VRPTW Instance
+  description: A medium-sized example problem with 10 customers and 3 vehicles
+  vehicles: 3
+  vehicle_capacity: 100
+  vehicle_speed: 60  # km/h for actual distance-to-time conversion
+
+depot:
+  x: 50.0
+  y: 50.0
+
+customers:
+  - id: 1
+    x: 10.0
+    y: 10.0
+    demand: 10
+    ready_time: 0.0
+    due_time: 200.0
+    service_time: 5.0
+    priority: 1
+
+  - id: 2
+    x: 15.0
+    y: 30.0
+    demand: 12
+    ready_time: 10.0
+    due_time: 210.0
+    service_time: 6.0
+    priority: 2
+
+  - id: 3
+    x: 30.0
+    y: 20.0
+    demand: 8
+    ready_time: 5.0
+    due_time: 190.0
+    service_time: 4.0
+    priority: 1
+
+  - id: 4
+    x: 45.0
+    y: 15.0
+    demand: 15
+    ready_time: 15.0
+    due_time: 220.0
+    service_time: 7.0
+    priority: 2
+
+  - id: 5
+    x: 70.0
+    y: 20.0
+    demand: 11
+    ready_time: 20.0
+    due_time: 230.0
+    service_time: 5.0
+    priority: 1
+
+  - id: 6
+    x: 85.0
+    y: 30.0
+    demand: 9
+    ready_time: 0.0
+    due_time: 240.0
+    service_time: 5.0
+    priority: 1
+
+  - id: 7
+    x: 80.0
+    y: 60.0
+    demand: 14
+    ready_time: 25.0
+    due_time: 250.0
+    service_time: 6.0
+    priority: 3
+
+  - id: 8
+    x: 70.0
+    y: 80.0
+    demand: 10
+    ready_time: 30.0
+    due_time: 260.0
+    service_time: 5.0
+    priority: 1
+
+  - id: 9
+    x: 30.0
+    y: 85.0
+    demand: 13
+    ready_time: 10.0
+    due_time: 270.0
+    service_time: 7.0
+    priority: 2
+
+  - id: 10
+    x: 15.0
+    y: 70.0
+    demand: 11
+    ready_time: 0.0
+    due_time: 280.0
+    service_time: 6.0
+    priority: 1
