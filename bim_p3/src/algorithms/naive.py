@@ -31,57 +31,6 @@ def find_route(
             result[-1].append(nodes[i-1].idx)
     return result
 
-# OBSOLETE
-
-# def choose_clients_greedy(problem: ProblemInstance):
-#     not_included_clients = [c for c in problem.customers]
-#     included_clients = []
-#     included_eval = evaluate_solution(problem,[[]]).total_cost
-#     for number_served in range(len(problem.customers)):
-#         current_best = float("inf")
-#         to_add = not_included_clients[0]
-#         for i in not_included_clients:
-#             possible_clients = [c for c in included_clients] + [i]
-#             possible_evaluation =  evaluate_solution(
-#                     problem,
-#                     find_route(problem,possible_clients)
-#                     ).total_cost
-#             if possible_evaluation <= current_best:
-#                 to_add = i
-#                 current_best = possible_evaluation
-#         if current_best <= included_eval:
-#             included_clients.append(to_add)
-#             included_eval = current_best
-#             not_included_clients.remove(to_add)
-#         else:
-#             break
-#     result = find_route(problem,included_clients)
-#     return find_route(problem,included_clients)
-#
-# def choose_clients_counter_greedy(problem: ProblemInstance):
-#     included_clients = [c for c in problem.customers]
-#     included_eval = evaluate_solution(problem,[[]]).total_cost
-#     for number_served in range(len(problem.customers),0,-1):
-#         current_best = float("inf")
-#         to_remove = included_clients[0]
-#         for i in included_clients:
-#             possible_clients = [j for j in included_clients]
-#             possible_clients.remove(i)
-#             possible_evaluation =  evaluate_solution(
-#                     problem,
-#                     find_route(problem,possible_clients)
-#                     ).total_cost
-#             if possible_evaluation <= current_best:
-#                 to_remove = i
-#                 current_best = possible_evaluation
-#         if current_best <= included_eval:
-#             included_clients.remove(to_remove)
-#             included_eval = current_best
-#         else:
-#             break
-#     result = find_route(problem,included_clients)
-#     return find_route(problem,included_clients)
-
 def choose_clients_alternating(problem: ProblemInstance, included_clients):
     """
     included_clients works as an initial guess for the best subset of customers.
@@ -117,9 +66,8 @@ def run_naive(
     problem: ProblemInstance,
     iterations: int = 60,
     seed: int = 0,
-    tries: int = 50
+    tries: int = 10
 ) -> tuple[list[list[int]], list[float]]:
-
     rutas = []
     rutas.append(choose_clients_alternating(problem,[])) # gives a first solution
     rutas.append(choose_clients_alternating(problem,[c for c in problem.customers])) # improves baseline
