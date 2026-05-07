@@ -200,6 +200,9 @@ def _run_streamlit() -> None:
                     num_customers=customers,
                     num_vehicles=vehicles,
                     vehicle_capacity=capacity,
+                    weight_delay=weight_delay,
+                    weight_unserved=weight_unserved,
+                    weight_capacity=weight_capacity,
                     seed=int(seed),
                 )
         except Exception as e:
@@ -211,9 +214,6 @@ def _run_streamlit() -> None:
         result = evaluate_solution(
             problem, 
             routes,
-            weight_delay=weight_delay,
-            weight_unserved=weight_unserved,
-            weight_capacity_violation=weight_capacity,
         )
 
         # Persist last successful run so UI actions (like opening info modal)

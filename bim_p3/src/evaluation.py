@@ -55,10 +55,7 @@ class EvaluationResult:
 
 def evaluate_solution(
     problem: ProblemInstance,
-    routes: list[list[int]],
-    weight_delay: float = 10.0,
-    weight_unserved: float = 200.0,
-    weight_capacity_violation: float = 150.0,
+    routes: list[list[int]],    
 ) -> EvaluationResult:
     """
     Evaluate a proposed solution (list of routes) for a VRP instance.
@@ -140,7 +137,7 @@ def evaluate_solution(
         + problem.weight_delay * total_delay                                  # Time window violations
         + problem.fixed_vehicle_cost * vehicles_used                  # Vehicle deployment cost
         + problem.weight_unserved * unserved                                  # Unserved customers
-        + problem.weight_capacity_violation * capacity_violations             # Capacity violations
+        + problem.weight_capacity * capacity_violations             # Capacity violations
     )
 
     return EvaluationResult(
