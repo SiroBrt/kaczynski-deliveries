@@ -66,6 +66,9 @@ class ProblemInstance:
     num_vehicles: int
     vehicle_speed: float = 1.0
     fixed_vehicle_cost: float = 15.0
+    weight_delay: float = 10.0
+    weight_unserved: float = 200.0
+    weight_capacity: float = 150.0
 
     def distance(self, a: int, b: int) -> float:
         """
@@ -114,6 +117,9 @@ def generate_instance(
     vehicle_capacity: int = 30,
     width: int = 100,
     height: int = 100,
+    weight_delay: float = 10.0,
+    weight_unserved: float = 200.0,
+    weight_capacity: float = 150.0,
     seed: int = 0,
 ) -> ProblemInstance:
     """
@@ -171,6 +177,9 @@ def generate_instance(
         customers=customers,
         vehicle_capacity=vehicle_capacity,
         num_vehicles=num_vehicles,
+        weight_delay=weight_delay,
+        weight_unserved=weight_unserved,
+        weight_capacity=weight_capacity,
     )
 
 

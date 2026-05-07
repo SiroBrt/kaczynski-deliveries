@@ -137,10 +137,10 @@ def evaluate_solution(
     # Weights can be tuned to emphasize different aspects
     total_cost = (
         total_distance                                                # Base cost: every km counts
-        + weight_delay * total_delay                                  # Time window violations
+        + problem.weight_delay * total_delay                                  # Time window violations
         + problem.fixed_vehicle_cost * vehicles_used                  # Vehicle deployment cost
-        + weight_unserved * unserved                                  # Unserved customers
-        + weight_capacity_violation * capacity_violations             # Capacity violations
+        + problem.weight_unserved * unserved                                  # Unserved customers
+        + problem.weight_capacity_violation * capacity_violations             # Capacity violations
     )
 
     return EvaluationResult(
