@@ -59,8 +59,7 @@ def evaluate_truck(
 
 def cluster(problem: ProblemInstance, seed: int = 0, cluster_number: int = 1):
     """
-    Returns a Kmeans model fitted to the customer locations. Used to cluster the customers into groups.
-    For now, each cluster will be assigned to a single vehicle, and the customers in that cluster will be served by that vehicle.
+    Returns a Kmeans model fitted to the customer locations. Used to cluster the customers into a given number of groups.
     """
     X = np.array([[c.x, c.y] for c in problem.customers])
     kmeans = KMeans(n_clusters=cluster_number, random_state=seed)
@@ -162,21 +161,23 @@ def choose_clients_alternating(problem: ProblemInstance, included_clients, clust
             break
     return find_route(problem,included_clients,clustering,seed)
 
-def run_selection(
+def run_heavy(
     problem: ProblemInstance,
     seed: int = 0,
     tries: int = 2
 ) -> tuple[list[list[int]], list[float]]:
+    """
+    Finds a good solution by alternating between selecting which customers to serve and finding good routes for those customers.
+    """
+
     random.seed(seed)
     t1 = time.time()
-    rutas = []
-    rutas.append(choose_clients_alternating(problem,[c for c in problem.customers],cluster))
-    evals = []
-    evals.append(evaluate_solution(problem,rutas[0]).total_cost)
+    rutas = [choose_clients_alternating(problem,[c for c in problem.customers], cluster)]
+    evals = [evaluate_solution(problem,rutas[0]).total_cost]
 
-    # random starts to get different minima
+    # Random starts to get different minima
     for _ in range(tries):
-        rutas.append(choose_clients_alternating(problem,random.sample(problem.customers,len(problem.customers)//2),cluster))
+        rutas.append(choose_clients_alternating(problem,random.sample(problem.customers, len(problem.customers)//2), cluster))
         evals.append(evaluate_solution(problem,rutas[-1]).total_cost)
     t2 = time.time()
     print(f"heavy: {round(t2-t1,4)} sec, {round(min(evals))}")
@@ -194,4 +195,4 @@ def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[
     Returns:
         Tuple of (routes, history).
     """
-    return run_selection(problem, seed=seed)
+    return run_heavy(problem, seed=seed)

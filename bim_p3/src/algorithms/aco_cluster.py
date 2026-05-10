@@ -24,9 +24,11 @@ import numpy as np
 try:
     from ..evaluation import evaluate_solution
     from ..problem import ProblemInstance
+    from .aco import run_aco
 except ImportError:
     from evaluation import evaluate_solution
     from problem import ProblemInstance
+    from .aco import run_aco
 
 
 # ============================================================================
@@ -55,14 +57,16 @@ def refine_routes(routes: list[list[int]], problem: ProblemInstance) -> list[lis
         
         # Greedily select nearest unvisited customer
         current_customer = nearest_initial_customer
+        current_time = problem.customers[current_customer - 1].ready_time + problem.customers[current_customer - 1].service_time
         while unvisited:
             nearest = min(
                 unvisited,
-                key=lambda cid: problem.distance(current_customer, cid)
+                key=lambda cid: problem.distance(current_customer, cid) + 0.1 * (problem.customers[cid - 1].due_time - current_time)
             )
             ordered_route.append(nearest)
             unvisited.remove(nearest)
             current_customer = nearest
+            current_time = problem.customers[current_customer - 1].ready_time + problem.customers[current_customer - 1].service_time
         
         refined_routes.append(ordered_route)
     return refined_routes
@@ -70,18 +74,39 @@ def refine_routes(routes: list[list[int]], problem: ProblemInstance) -> list[lis
 def cluster(
     problem: ProblemInstance,
     seed: int = 0,
-) -> KMeans:
+    n_clusters: int = 1,
+) -> list[ProblemInstance]:
     """
     Returns a Kmeans model fitted to the customer locations. Used to cluster the customers into groups.
-    For now, each cluster will be assigned to a single vehicle, and the customers in that cluster will be served by that vehicle.
     """
-    # 1. Extract only 2D positions from customer data for clustering
-    X = np.array([[c.x, c.y] for c in problem.customers])
 
-    # 2. Define the model and fit the model to the data
-    kmeans = KMeans(n_clusters=problem.num_vehicles, random_state=seed)
+    X = np.array([[c.x, c.y] for c in problem.customers])
+    kmeans = KMeans(n_clusters=n_clusters, random_state=seed)
     kmeans.fit(X)
-    return kmeans
+    labels = kmeans.labels_
+    centroids = kmeans.cluster_centers_
+    customer_ids = np.array([c.idx for c in problem.customers])
+    customer_ids_by_cluster = [customer_ids[labels == i].tolist() for i in range(problem.num_vehicles)]
+
+    subproblems = [
+        ProblemInstance(
+            # centroids[i][0], 
+            # centroids[i][1], 
+            problem.depot_x,
+            problem.depot_y,
+            [problem.customers[j - 1] for j in cluster],
+            problem.vehicle_capacity, 
+            1,
+            problem.vehicle_speed,
+            problem.fixed_vehicle_cost,
+            problem.weight_delay,
+            problem.weight_unserved,
+            problem.weight_capacity,
+        ) 
+        for i, cluster in enumerate(customer_ids_by_cluster)
+    ]
+
+    return subproblems
 
 # ============================================================================
 # CLUSTER Main Algorithm
@@ -94,20 +119,24 @@ def run_cluster(
     tries: int = 10
 ) -> tuple[list[list[int]], list[float]]:
 
-    customer_ids = np.array([c.idx for c in problem.customers])
-    kmeans: KMeans = cluster(problem, seed=seed)
+    subproblems = cluster(problem, seed=seed, n_clusters=problem.num_vehicles)
+    subproblem_routes = [
+        run_aco(
+            subproblem, 
+            iterations=int(subproblem.num_customers * 2.5),
+            ants=int(subproblem.num_customers * 0.85),
+            seed=seed
+        )
+        for subproblem in subproblems
+    ]
+    routes = [route[0][0] for route in subproblem_routes]
+    for subproblem, route in zip(subproblems, routes):
+        for i, customer_idx in enumerate(route):
+            route[i] = subproblem.customers[customer_idx - 1].idx
 
-    labels = kmeans.labels_
-    centroids = kmeans.cluster_centers_
-
-    # print(f"Cluster Labels: {labels}")
-    # print(f"Centroids:\n{centroids}")
-    # print(customer_ids[labels == 0])
-    
-    routes = [customer_ids[labels == i].tolist() for i in range(problem.num_vehicles)]
-    # print(routes)
-    refined_routes = refine_routes(routes, problem)
-    return refined_routes, []
+    print([route[0] for route in subproblem_routes])
+    # refined_routes = refine_routes(routes, problem)
+    return [route[0][0] for route in subproblem_routes], []
 
 def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[float]]:
     """
