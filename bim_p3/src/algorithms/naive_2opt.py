@@ -1,13 +1,96 @@
 import random
 import time
+import math
+
 try:
     from ..evaluation import evaluate_solution
     from ..problem import ProblemInstance, Customer
-    from baseline import greedy_baseline
+    from heavy import auto2opt
 except ImportError:
     from evaluation import evaluate_solution
     from problem import ProblemInstance, Customer
-    from algorithms.baseline import greedy_baseline
+    from algorithms.heavy import auto2opt
+
+
+def greedy_baseline(problem: ProblemInstance) -> list[list[int]]:
+    """
+    Copy of greedy_baseline but better
+    """
+    if problem.customers == []:
+        return [[]]
+    unvisited = problem.customers
+    routes: list[list[int]] = []
+    avg_service =  sum([c.service_time for c in problem.customers])/len(problem.customers)
+    print(avg_service,len(problem.customers))
+    wait_weight = 0.5
+    lateness_weight = 3.0
+
+    # Build one route per vehicle
+    for _ in range(problem.num_vehicles):
+        route: list[int] = []
+        depot = Customer(
+                idx=0,
+                x=problem.depot_x,
+                y=problem.depot_y,
+                demand=0,
+                ready_time=0.0,
+                due_time=float("inf"),
+                service_time=0.0,
+                priority=0
+                )
+        current = depot # Start at depot
+        remaining_capacity = problem.vehicle_capacity
+        current_time = 0.0
+
+        # Greedily add customers to this route
+        while unvisited:
+            # Find all feasible customers (capacity constraint + demand check)
+            best = (float("inf"),depot)
+            for cust in unvisited:
+                # Skip if adding this customer exceeds capacity
+                if cust.demand > remaining_capacity:
+                    continue
+                
+                # Calculate metrics for this customer
+                dist = math.hypot(current.x - cust.x, current.y - cust.y)
+                arrival = current_time + dist / problem.vehicle_speed
+                wait = max(0.0, cust.ready_time - arrival)
+                lateness = max(0.0, arrival - cust.due_time)
+                
+                # Score: lower is better
+                # Distance is the main criterion
+                # Wait time and lateness are penalties
+                score = dist + wait_weight * wait + lateness_weight * lateness
+                if score < best[0]:
+                    best = (score, cust)
+
+            # If no feasible customers, move to next vehicle
+            if best[0] == float("inf"):
+                break
+
+            # Select the customer with the best score
+            cust = best[1]
+            
+            # Update route and vehicle state
+            dist = math.hypot(current.x - cust.x, current.y - cust.y)
+            arrival = current_time + dist / problem.vehicle_speed
+            current_time = max(arrival, cust.ready_time) + cust.service_time
+            remaining_capacity -= cust.demand
+            route.append(cust.idx)
+            unvisited.remove(cust)
+            current = cust
+
+        routes.append(route)
+
+    # Handle any remaining unvisited customers (assign to last route)
+    if unvisited:
+        if routes:
+            routes[-1].extend([c.idx for c in unvisited])
+        else:
+            routes.append([c.idx for c in unvisited])
+
+    return routes
+
 
 
 def find_route(
@@ -26,9 +109,7 @@ def find_route(
     # greedy_baseline actually uses de position of the customers in the list instead of the idx attribute, so we have to convert it
     result = []
     for route in fake_result:
-        result.append([])
-        for i in route:
-            result[-1].append(nodes[i-1].idx)
+        result.append(auto2opt(old_problem,route))
     return result
 
 def choose_clients_alternating(problem: ProblemInstance, included_clients):
@@ -82,7 +163,7 @@ def run_selection(
         rutas.append(choose_clients_alternating(problem,random.sample(problem.customers,len(problem.customers)//2)))
         evals.append(evaluate_solution(problem,rutas[-1]).total_cost)
     t2 = time.time()
-    print(f"naive: {round(t2-t1,4)} sec, {round(min(evals))}")
+    print(f"naive 2opt: {round(t2-t1,4)} sec, {round(min(evals))}")
     return rutas[evals.index(min(evals))], []
 
 
