@@ -12,8 +12,10 @@ from __future__ import annotations
 
 try:
     from ..problem import ProblemInstance
+    from ..evaluation import evaluate_solution
 except ImportError:
     from problem import ProblemInstance
+    from evaluation import evaluate_solution
 
 
 def greedy_baseline(problem: ProblemInstance) -> list[list[int]]:
@@ -108,6 +110,8 @@ def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[
         seed: Ignored (baseline is deterministic)
         
     Returns:
-        Tuple of (routes, history) where history is empty for baseline.
+        Tuple of (routes, history) where history is just a score of solution.
     """
-    return greedy_baseline(problem), []
+    routes = greedy_baseline(problem)
+    score = evaluate_solution(problem, routes).total_cost
+    return routes, [score]
