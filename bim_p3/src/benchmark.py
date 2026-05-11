@@ -21,10 +21,10 @@ import numpy as np
 
 try:
     from src.problem import ProblemInstance, generate_instance
-    from src.algorithms import migration, pso, aco, baseline
+    from src.algorithms import migration, pso, aco, aco_cluster, aco_pso_cluster, baseline, heavy, naive, naive_2opt, naive_aco_cluster, retarded_aco_cluster
 except ImportError:
     from problem import ProblemInstance, generate_instance
-    from algorithms import migration, pso, aco, baseline
+    from algorithms import migration, pso, aco, aco_cluster, aco_pso_cluster, baseline, heavy, naive, naive_2opt, naive_aco_cluster, retarded_aco_cluster
 
 
 # ============================================================================
@@ -226,7 +226,11 @@ def benchmark_algorithms_on_problem(
             "Migration": migration.run,
             "PSO": pso.run,
             "ACO": aco.run,
+            "ACO PSO Cluster": aco_pso_cluster.run,
             "Baseline": baseline.run,
+            "Heavy": heavy.run,
+            "Naive": naive.run,
+            "Naive 2opt": naive_2opt.run,
         }
     
     results = {}
@@ -282,7 +286,11 @@ def benchmark_suite(
             "Migration": migration.run,
             "PSO": pso.run,
             "ACO": aco.run,
+            "ACO PSO Cluster": aco_pso_cluster.run,
             "Baseline": baseline.run,
+            "Heavy": heavy.run,
+            "Naive": naive.run,
+            "Naive 2opt": naive_2opt.run,
         }
     
     all_results = {}

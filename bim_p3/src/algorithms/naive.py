@@ -83,7 +83,9 @@ def run_selection(
         evals.append(evaluate_solution(problem,rutas[-1]).total_cost)
     t2 = time.time()
     print(f"naive: {round(t2-t1,4)} sec, {round(min(evals))}")
-    return rutas[evals.index(min(evals))], []
+    routes = rutas[evals.index(min(evals))]
+    score = evaluate_solution(problem, routes).total_cost
+    return routes, [score]
 
 
 
