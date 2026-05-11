@@ -5,17 +5,17 @@ import math
 import time
 
 try:
-    from ..evaluation import evaluate_solution, EvaluationResult
+    from ..evaluation import evaluate_solution
     from ..problem import ProblemInstance, Customer
 except ImportError:
-    from evaluation import evaluate_solution, EvaluationResult
+    from evaluation import evaluate_solution
     from problem import ProblemInstance, Customer
 
 
 def evaluate_truck(
     problem: ProblemInstance,
     route: list[int]
-) -> EvaluationResult:
+    ):
     '''
     Faster evaluate_solution with only one route.
     Ignores vehicle costs, overload and unserved customers
@@ -113,7 +113,7 @@ def find_route(old_problem: ProblemInstance, included:[Customer], clustering, se
     best_route = [[]]
     upper_limit = min(old_problem.num_vehicles,len(included))
 
-    for cluster_number in range(upper_limit,0,-1):
+    for cluster_number in range(upper_limit,upper_limit//2,-1):
         # choose clients for each route
         result = clustering(new_problem,seed,cluster_number)
 
@@ -187,6 +187,12 @@ def run_heavy(
 def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[float]]:
     """
     Use same approach as "naive.py" to select which customers to serve. Then, use a better way to find route
+
+    time approx:
+    - 30 customers: ~5 secs
+    - 40 customers: ~30 secs
+    - 50 customers: ~5 mins
+    - 100 customers: 2-3 hours
     
     Args:
         problem: VRP problem instance
