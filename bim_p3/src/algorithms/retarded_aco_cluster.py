@@ -121,6 +121,7 @@ def run_aco(
     """
     rng = random.Random(seed)
     n = problem.num_customers
+    ants = max(ants, n)  # Limit ants to number of customers for efficiency
     
     # Initialize pheromone matrix (all edges equally likely initially)
     pheromone = [[1.0 for _ in range(n + 1)] for _ in range(n + 1)] if pheromone is None else pheromone
@@ -313,13 +314,17 @@ def run_cluster(
         subproblem_idxs = np.array([c.idx for c in subproblem.customers])
         pheromone[np.ix_(subproblem_idxs, subproblem_idxs)] = np.array(subproblem_results[2])[1:, 1:]
     
-    main_problem_result = run_aco(
+    
+    main_problem_best_route, main_problem_progress, _, _ = run_aco(
         problem, 
         iterations=int(problem.num_customers * 0.2),
         ants=int(problem.num_customers * 0.85),
         pheromone=pheromone,
         seed=seed,
     )
+
+    return main_problem_best_route, main_problem_progress
+
 
     # Progress monitoring
     # progress = [subproblem_route[1] for subproblem_route in subproblem_results]

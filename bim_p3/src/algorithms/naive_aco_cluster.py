@@ -107,7 +107,6 @@ def run_naive_aco_cluster(
         filled_array[i, :row_len] = row
         filled_array[i, row_len:] = row[-1]
 
-    print(filled_array)
     return [route[0][0] for route in subproblem_results],  np.sum(filled_array, axis=0).tolist()
 
 def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[float]]:
