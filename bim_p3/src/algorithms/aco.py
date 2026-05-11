@@ -118,6 +118,7 @@ def run_aco(
     """
     rng = random.Random(seed)
     n = problem.num_customers
+    ants = max(ants, n)  # Limit ants to number of customers for efficiency
     
     # Initialize pheromone matrix (all edges equally likely initially)
     pheromone = [[1.0 for _ in range(n + 1)] for _ in range(n + 1)]
