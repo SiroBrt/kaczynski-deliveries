@@ -134,7 +134,7 @@ def choose_clients_alternating(problem: ProblemInstance, included_clients):
 
     Inspired by variable selection techinques in statistics
     """
-    included_eval = evaluate_solution(problem,find_route(problem,included_clients)).total_cost
+    history = [evaluate_solution(problem,find_route(problem,included_clients)).total_cost]
     current_best = float("inf")
     while True:
         for i in problem.customers:
@@ -147,15 +147,16 @@ def choose_clients_alternating(problem: ProblemInstance, included_clients):
             if possible_evaluation <= current_best:
                 to_change = i
                 current_best = possible_evaluation
-        if current_best < included_eval:
+        if current_best < history[-1]:
             if to_change in included_clients:
                 included_clients.remove(to_change)
             else:
                 included_clients.append(to_change)
-            included_eval = current_best
+            history.append(current_best)
         else:
             break
-    return find_route(problem,included_clients)
+    print(history)
+    return find_route(problem,included_clients), history
 
     
 def run_selection(
@@ -168,21 +169,20 @@ def run_selection(
     rutas = []
     evals = []
     rutas.append(choose_clients_alternating(problem,[])) # gives a first solution
-    evals.append(evaluate_solution(problem,rutas[0]).total_cost)
+    evals.append(evaluate_solution(problem,rutas[0][0]).total_cost)
     if len(problem.customers) < 30:
         rutas.append(choose_clients_alternating(problem,[c for c in problem.customers])) # improves baseline
-        evals.append(evaluate_solution(problem,rutas[1]).total_cost)
+        evals.append(evaluate_solution(problem,rutas[1][0]).total_cost)
 
 
     # random starts to get different minima
     for _ in range(tries):
         rutas.append(choose_clients_alternating(problem,random.sample(problem.customers,2*len(problem.customers)//3)))
-        evals.append(evaluate_solution(problem,rutas[-1]).total_cost)
+        evals.append(evaluate_solution(problem,rutas[-1][0]).total_cost)
     t2 = time.time()
     print(f"naive 2opt: {round(t2-t1,4)} sec, {round(min(evals))}")
     routes = rutas[evals.index(min(evals))]
-    score = evaluate_solution(problem, routes).total_cost
-    return routes, [score]
+    return routes
 
 
 
