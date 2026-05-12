@@ -166,21 +166,55 @@ def find_clusters(elems, n_clusters):
         result.append([i])
         elems.remove(i)
 
-    # add elements to clusters alternating
-    # other option would be to select the closest to each cluster simultaneoulsy to 
-    # avoid "stealing" from a better cluster, but too inefficient
-    c = random.sample(range(n_clusters),1)[0]
+    # we see the closest point to each cluster and add them. If a point 
+    # is the closest one to 2 or more clusters, the one with smallest distance
+    # keeps it
     while elems:
-        min_value = float("inf")
-        chosen = elems[0]
-        for i in elems:
-            d = distance_to_cluster(i,result[c])
-            if d < min_value:
-                min_value = d
-                chosen = i
-        result[c].append(chosen)
-        elems.remove(chosen)
-        c = (c+1)%n_clusters
+        mins = [(-1,float("inf")) for _ in range(n_clusters)]
+        c = 0
+        while (-1,float("inf")) in mins:
+            if len(elems) == sum([m[0] != -1 for m in mins]):
+                break
+            if mins[c][0] != -1:
+                c = (c+1)%n_clusters
+                continue
+
+            distances = [(distance_to_cluster(i, result[c]),i[1].idx) for i in elems]
+            while True:
+                if distances == []:
+                    break
+                closest = -1
+                min_value = float("inf")
+                for i in distances:
+                    if i[0] < min_value:
+                        min_value = i[0]
+                        closest = i[1]
+
+                if closest not in [m[0] for m in mins]:
+                    mins[c] = (closest,min_value)
+                    break
+                else:
+                    # conflict -> only one can remain
+                    other_c = [m[0] for m in mins].index(closest)
+                    if mins[other_c][1] <= min_value:
+                        for d in distances:
+                            if d[1] == closest:
+                                distances.remove(d)
+                                break
+                    else:
+                        mins[c] = (closest,min_value)
+                        mins[other_c] = (-1,float("inf"))
+                        break
+            c = (c+1)%n_clusters
+        for i in range(n_clusters):
+            if mins[i][0] == -1:
+                continue
+            for e in elems:
+                if e[1].idx == mins[i][0]:
+                    result[i].append(e)
+                    elems.remove(e)
+                    break
+
     cluster = []
     for c in result:
         cluster.append([e[1].idx for e in c])
@@ -239,10 +273,7 @@ def termite_clustering(
     
     board = Board(food,limits,agents)
 
-    board.print_board()
     board.iterate(iterations)
-    print("working")
-    board.print_board()
 
     # Now we identify the good clusters 
     # should be easy since they are close
@@ -250,3 +281,19 @@ def termite_clustering(
     result = find_clusters(list(board.food.items()),n_clusters)
 
     return result
+
+def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[float]]:
+    """
+    Args:
+        problem: VRP problem instance
+        seed: Random seed for reproducibility
+        
+    Returns:
+        Tuple of (routes, history).
+    """
+    t1 = time.time()
+    result = termite_clustering(problem, seed=seed,n_clusters=4)
+    t2 = time.time()
+    print(t2-t1)
+
+    return result, []
