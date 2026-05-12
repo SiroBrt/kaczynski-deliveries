@@ -142,7 +142,7 @@ def customer_similarity(
     cust_b: Customer
     ):
     dist = math.hypot(cust_a.x - cust_b.x, cust_a.y - cust_b.y)
-    half = 50 # sets the 0.5 threshold for dist_metric
+    half = 5 # sets the 0.5 threshold for dist_metric
     dist_metric = 1-sigmoid(dist/half) # inverted logistic for distance
 
 
@@ -152,17 +152,55 @@ def customer_similarity(
 
     return time_metric/2+dist_metric # average of metrics
 
+def distance_to_cluster(elem,cluster):
+    dist = float("inf")
+    for i in cluster:
+        dist = min(dist, math.hypot(i[0][0]-elem[0][0], i[0][1] - elem[0][1]))
+    return dist
+
+def find_clusters(elems, n_clusters):
+    # choose centers of clusters
+    centers = random.sample(elems,n_clusters)
+    result = [] # list [(coor,cust)]
+    for i in centers:
+        result.append([i])
+        elems.remove(i)
+
+    # add elements to clusters alternating
+    # other option would be to select the closest to each cluster simultaneoulsy to 
+    # avoid "stealing" from a better cluster, but too inefficient
+    c = random.sample(range(n_clusters),1)[0]
+    while elems:
+        min_value = float("inf")
+        chosen = elems[0]
+        for i in elems:
+            d = distance_to_cluster(i,result[c])
+            if d < min_value:
+                min_value = d
+                chosen = i
+        result[c].append(chosen)
+        elems.remove(chosen)
+        c = (c+1)%n_clusters
+    cluster = []
+    for c in result:
+        cluster.append([e[1].idx for e in c])
+
+    return cluster
+
 
 def thermite_clustering(
     problem: ProblemInstance,
     seed: int = 0,
+    n_clusters: int = 1,
     thermites: int=-1,
-    iterations: int=50
+    iterations: int=-1
     ):
     random.seed(seed)
     if thermites == -1:
         thermites = len(problem.customers)//2
 
+    if iterations == -1:
+        iterations = len(problem.customers)*10
 
     first_limits=[
         int(min([i.x for i in problem.customers])),
@@ -171,8 +209,7 @@ def thermite_clustering(
         int(max([i.y for i in problem.customers]))
         ]
 
-    # we want to have a dense space for thermites to work in, more or
-    # less 1/2 of free space at most
+    # we want to have a dense space for thermites to work in
     space = (first_limits[2]-first_limits[0])*(first_limits[3]-first_limits[1])
     ideal_area = len(problem.customers)*2
     shrink_factor= np.floor(np.sqrt(space/ideal_area))
@@ -210,48 +247,6 @@ def thermite_clustering(
     # Now we identify the good clusters 
     # should be easy since they are close
 
+    result = find_clusters(list(board.food.items()),n_clusters)
 
-
-
-
-
-
-
-
-    return
-
-def cluster(problem: ProblemInstance, seed: int = 0, cluster_number: int = 1):
-    """
-    Returns a Kmeans model fitted to the customer locations. Used to cluster the customers into a given number of groups.
-    """
-    X = np.array([[c.x, c.y] for c in problem.customers])
-    kmeans = KMeans(n_clusters=cluster_number, random_state=seed)
-    kmeans.fit(X)
-    labels = kmeans.labels_
-    customer_ids = np.array([c.idx for c in problem.customers])
-    routes = [customer_ids[labels == i].tolist() for i in range(problem.num_vehicles)]
-    return routes
-
-
-
-def run(problem: ProblemInstance, seed: int = 0) -> tuple[list[list[int]], list[float]]:
-    """
-    Args:
-        problem: VRP problem instance
-        seed: Random seed for reproducibility
-        
-    Returns:
-        Tuple of (routes, history).
-    """
-    t1 = time.time()
-    thermite_clustering(problem, seed=seed)
-    t2 = time.time()
-    print(t2-t1)
-
-    t1 = time.time()
-    cluster(problem, seed=seed,cluster_number=4)
-    t2 = time.time()
-    print(t2-t1)
-
-
-    return [[]], []
+    return result
