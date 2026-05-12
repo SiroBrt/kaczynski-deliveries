@@ -1,0 +1,101 @@
+{
+  "Migration": {
+    "best_score_ever": 1411.6463157554351,
+    "average_final_score": 1953.5104933807165,
+    "std_final_score": 329.69932551153954,
+    "average_best_score": 1953.5104933807165,
+    "std_best_score": 329.69932551153954,
+    "average_time": 3.1171145677566527,
+    "num_runs": 10
+  },
+  "Migration Modified": {
+    "best_score_ever": 1668.8075235588665,
+    "average_final_score": 1964.366728025775,
+    "std_final_score": 179.95774688946753,
+    "average_best_score": 1964.366728025775,
+    "std_best_score": 179.95774688946753,
+    "average_time": 3.169084596633911,
+    "num_runs": 10
+  },
+  "Migration Max": {
+    "best_score_ever": 1683.4336244554304,
+    "average_final_score": 1893.3422258591904,
+    "std_final_score": 185.14471094965836,
+    "average_best_score": 1893.3422258591904,
+    "std_best_score": 185.14471094965836,
+    "average_time": 15.84993064403534,
+    "num_runs": 10
+  },
+  "PSO": {
+    "best_score_ever": 3066.6953411560526,
+    "average_final_score": 3400.1994008953666,
+    "std_final_score": 278.26813985779086,
+    "average_best_score": 3400.1994008953666,
+    "std_best_score": 278.26813985779086,
+    "average_time": 0.10129480361938477,
+    "num_runs": 10
+  },
+  "ACO": {
+    "best_score_ever": 3550.7224254667663,
+    "average_final_score": 5088.636983852744,
+    "std_final_score": 1212.1571294961268,
+    "average_best_score": 5088.636983852744,
+    "std_best_score": 1212.1571294961268,
+    "average_time": 0.5173994779586792,
+    "num_runs": 10
+  },
+  "ACO PSO Cluster": {
+    "best_score_ever": 3458.785198412993,
+    "average_final_score": 4975.619017381842,
+    "std_final_score": 1435.7180993728875,
+    "average_best_score": 4975.619017381842,
+    "std_best_score": 1435.7180993728875,
+    "average_time": 0.6225064992904663,
+    "num_runs": 10
+  },
+  "Baseline": {
+    "best_score_ever": 3980.263291970278,
+    "average_final_score": 8038.978441657417,
+    "std_final_score": 2430.2755580625485,
+    "average_best_score": 8038.978441657417,
+    "std_best_score": 2430.2755580625485,
+    "average_time": 0.0005023717880249023,
+    "num_runs": 10
+  },
+  "Naive": {
+    "best_score_ever": 1599.8701671479823,
+    "average_final_score": 3014.6895446514363,
+    "std_final_score": 859.7080204672126,
+    "average_best_score": 3014.6895446514363,
+    "std_best_score": 859.7080204672126,
+    "average_time": 0.1949143648147583,
+    "num_runs": 10
+  },
+  "Naive 2opt": {
+    "best_score_ever": 1513.0063891680156,
+    "average_final_score": 1513.0063891680156,
+    "std_final_score": 0,
+    "average_best_score": 1513.0063891680156,
+    "std_best_score": 0,
+    "average_time": 3.705900192260742,
+    "num_runs": 1
+  },
+  "Naive ACO Cluster": {
+    "best_score_ever": 1170,
+    "average_final_score": 1991.1,
+    "std_final_score": 566.0878318188206,
+    "average_best_score": 1991.1,
+    "std_best_score": 566.0878318188206,
+    "average_time": 0.009619927406311036,
+    "num_runs": 10
+  },
+  "ACO Cluster": {
+    "best_score_ever": 3778.6415703586863,
+    "average_final_score": 6357.922006201256,
+    "std_final_score": 2189.4043465711625,
+    "average_best_score": 6357.922006201256,
+    "std_best_score": 2189.4043465711625,
+    "average_time": 0.11260254383087158,
+    "num_runs": 10
+  }
+}
