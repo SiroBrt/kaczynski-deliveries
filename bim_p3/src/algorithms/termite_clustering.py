@@ -12,8 +12,8 @@ except ImportError:
     from problem import ProblemInstance, Customer
 
 
-class Thermite:
-    """One of the ants/thermites assigned to the gathering of nodes"""
+class Termite:
+    """One of the ants/termites assigned to the gathering of nodes"""
     
     load: Customer=Customer(
             idx=0,
@@ -80,7 +80,7 @@ def find_empty(lista,limits,x,y):
 class Board:
     food: dict(coord=(int,int), thing=Customer)
     limits: [int]=[0,0,200,200]
-    agents: [Thermite]
+    agents: [Termite]
 
     def __init__(self,food,limits,agents):
         self.food=food
@@ -88,7 +88,7 @@ class Board:
         self.agents=agents
 
     def iterate(self,iterations):
-        thermites = [t for t in self.agents]
+        termites = [t for t in self.agents]
         for i in range(iterations):
             for t in self.agents:
                 coord = t.position
@@ -188,16 +188,16 @@ def find_clusters(elems, n_clusters):
     return cluster
 
 
-def thermite_clustering(
+def termite_clustering(
     problem: ProblemInstance,
     seed: int = 0,
     n_clusters: int = 1,
-    thermites: int=-1,
+    termites: int=-1,
     iterations: int=-1
     ):
     random.seed(seed)
-    if thermites == -1:
-        thermites = len(problem.customers)//2
+    if termites == -1:
+        termites = len(problem.customers)//2
 
     if iterations == -1:
         iterations = len(problem.customers)*10
@@ -209,7 +209,7 @@ def thermite_clustering(
         int(max([i.y for i in problem.customers]))
         ]
 
-    # we want to have a dense space for thermites to work in
+    # we want to have a dense space for termites to work in
     space = (first_limits[2]-first_limits[0])*(first_limits[3]-first_limits[1])
     ideal_area = len(problem.customers)*2
     shrink_factor= np.floor(np.sqrt(space/ideal_area))
@@ -231,11 +231,11 @@ def thermite_clustering(
             new_x, new_y = find_empty(food.keys(),limits,x,y)
             food[(new_x,new_y)]=i
 
-    agents = [Thermite(position=(
+    agents = [Termite(position=(
                         int((limits[2]-limits[0])*random.random())+limits[0],
                         int((limits[3]-limits[1])*random.random())+limits[1]
                     )
-                )   for t in range(thermites)]
+                )   for t in range(termites)]
     
     board = Board(food,limits,agents)
 
