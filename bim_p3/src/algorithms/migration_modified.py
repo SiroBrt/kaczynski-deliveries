@@ -91,10 +91,12 @@ class Individual:
         for _ in range(num_vehicles):
             # Randomly assign customers to this vehicle
             if self.unvisited:
-                route = random.sample(
-                    sorted(self.unvisited),
-                    random.randint(0, min(len(self.unvisited), self.__problem.num_customers // num_vehicles + 1))
-                )
+                upper = min(len(self.unvisited), self.__problem.num_customers // num_vehicles + 1)
+                if upper < 2:
+                    sample_size = upper
+                else:
+                    sample_size = random.randint(2, upper)
+                route = random.sample(sorted(self.unvisited), sample_size)
                 vehicle = Vehicle(route)
                 self.vehicles.append(vehicle)
                 self.unvisited -= set(route)
@@ -321,11 +323,13 @@ def runMigration(
         local_best_scores = [math.inf] * generations_per_epoch
         bests_to_migrate = {}
 
+        progress = epoch/10
+
         for i, pop in enumerate(populations):
             score_history, _ = pop.runSelection(
                 generations=generations_per_epoch,
-                mutation_rate=0.35,
-                crossover_rate=0.6,
+                mutation_rate=0.35 + (1-progress)*0.15,
+                crossover_rate=0.6 - progress*0.15,
                 elite_size=elite_size,
                 tournament_size=3
             )

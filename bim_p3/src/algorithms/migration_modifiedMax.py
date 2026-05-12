@@ -313,7 +313,7 @@ def runMigration(
         populations.append(pop)
 
     best_score_hist = []
-    elite_size = max(2, population_size // 10)
+    elite_size = max(4, population_size // 10)
     generations_per_epoch = iterations // 10
     
     for epoch in range(10):
@@ -324,10 +324,10 @@ def runMigration(
         for i, pop in enumerate(populations):
             score_history, _ = pop.runSelection(
                 generations=generations_per_epoch,
-                mutation_rate=0.35,
+                mutation_rate=0.4,
                 crossover_rate=0.6,
                 elite_size=elite_size,
-                tournament_size=3
+                tournament_size=5
             )
             bests_to_migrate[i] = sorted(pop.individuals)[:elite_size]
             
@@ -352,14 +352,14 @@ def runMigration(
 
 def run(
     problem: ProblemInstance,
-    iterations: int = 120,
-    population_size: int = 120,
+    iterations: int = 200,
+    population_size: int = 200,
     seed: int = 0
 ) -> tuple[list[list[int]], list[float]]:
     start = time.time()
     results = runMigration(
         problem,
-        populations_num=6,
+        populations_num=10,
         iterations=iterations,
         population_size=population_size,
         seed=seed
