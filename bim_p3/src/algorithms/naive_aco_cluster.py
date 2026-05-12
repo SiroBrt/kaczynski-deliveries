@@ -74,7 +74,7 @@ def cluster(
     
 def run_naive_aco_cluster(
     problem: ProblemInstance,
-    iterations: int = 60,
+    iterations: int = 1000,
     seed: int = 0,
     tries: int = 10
 ) -> tuple[list[list[int]], list[float]]:
@@ -86,8 +86,12 @@ def run_naive_aco_cluster(
     subproblem_results = [
         run_aco(
             subproblem, 
-            iterations=int(subproblem.num_customers * 2.5),
+            iterations=iterations,
             ants=int(subproblem.num_customers * 0.85),
+            alpha=1.0,
+            beta=3.0,
+            rho=0.55,
+            q=75.0,
             seed=seed
         )
         for subproblem in subproblems
